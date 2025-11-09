@@ -1,1 +1,33 @@
-[]
+[
+  {
+    "job_name": "amount report",
+    "schedule_time": "*/2 * * * *",
+    "data_source": {
+      "source_type": "file",
+      "location": "/data/uploads/permissions (1).csv",
+      "file_type": "csv"
+    },
+    "processing_script": "filtered = data[data['amount'] > 100]\nresult = filtered.groupby('category').agg({\n    'amount': 'sum',\n    'quantity': 'count'\n}).reset_index()",
+    "consumer_emails": [
+      "hosammhmd94@gmail.com"
+    ],
+    "created_at": "2025-11-09T22:13:49.910584",
+    "last_run": null
+  },
+  {
+    "job_name": "sals",
+    "schedule_time": "*/2 * * * *",
+    "data_source": {
+      "source_type": "file",
+      "location": "/data/uploads/permissions (1).csv",
+      "file_type": "csv"
+    },
+    "processing_script": "filtered = data[data['amount'] > 100]\nresult = filtered.groupby('category').agg({\n    'amount': 'sum',\n    'quantity': 'count'\n}).reset_index()",
+    "consumer_emails": [
+      "hosammhmd94@gmail.com",
+      "hosammhmd94@gmail.com"
+    ],
+    "created_at": "2025-11-09T22:32:32.690068",
+    "last_run": null
+  }
+]

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Clock, RefreshCw, Calendar, Users, CheckCircle } from 'lucide-react'
 import { jobsApi } from '../services/api'
 import { Job } from '../types/job'
@@ -11,11 +12,13 @@ import LoadingSkeleton from '../components/LoadingSkeleton'
 import Alert from '../components/Alert'
 
 const Dashboard = () => {
+  const navigate = useNavigate()
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedJob, setSelectedJob] = useState<Job | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [testingJob, setTestingJob] = useState<string | null>(null)
 
   const fetchJobs = async () => {
     try {
@@ -44,6 +47,28 @@ const Dashboard = () => {
       }
     } catch (err: any) {
       alert(err.response?.data?.detail || 'Failed to delete job')
+    }
+  }
+
+  const handleTest = async (jobName: string) => {
+    try {
+      setTestingJob(jobName)
+      setError(null)
+      const blob = await jobsApi.testJob(jobName)
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${jobName}_test_result.csv`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to test job')
+    } finally {
+      setTestingJob(null)
     }
   }
 
@@ -141,8 +166,15 @@ const Dashboard = () => {
                 isSelected={selectedJob?.job_name === job.job_name}
                 onClick={() => setSelectedJob(job)}
                 onDelete={() => setDeleteConfirm(job.job_name)}
+                onTest={() => handleTest(job.job_name)}
+                onEdit={() => navigate(`/edit/${encodeURIComponent(job.job_name)}`)}
               />
             ))}
+            {testingJob && (
+              <div className="text-center text-sm text-gray-600">
+                Testing job "{testingJob}"...
+              </div>
+            )}
           </div>
 
           <div className="lg:sticky lg:top-6 h-fit">

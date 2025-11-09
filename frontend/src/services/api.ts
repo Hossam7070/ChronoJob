@@ -27,6 +27,29 @@ export const jobsApi = {
   deleteJob: async (jobName: string): Promise<void> => {
     await api.delete(`/jobs/${jobName}`)
   },
+
+  testJob: async (jobName: string): Promise<Blob> => {
+    const response = await api.post(`/jobs/${jobName}/test`, null, {
+      responseType: 'blob',
+    })
+    return response.data
+  },
+
+  updateJob: async (jobName: string, job: JobCreate): Promise<Job> => {
+    const response = await api.put<Job>(`/jobs/${jobName}`, job)
+    return response.data
+  },
+
+  uploadFile: async (file: File): Promise<{ filename: string; path: string; size: number }> => {
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await api.post('/jobs/upload-file', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    return response.data
+  },
 }
 
 export default api

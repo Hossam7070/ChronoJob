@@ -90,7 +90,7 @@ def fetch_from_file(file_path: str, file_type: str) -> pd.DataFrame:
     Read data from a local file.
     
     Args:
-        file_path: Path to the file
+        file_path: Path to the file (can be absolute or relative to project root)
         file_type: Type of file ('csv' or 'json')
     
     Returns:
@@ -104,16 +104,27 @@ def fetch_from_file(file_path: str, file_type: str) -> pd.DataFrame:
         
         path = Path(file_path)
         
+        # If path starts with /, treat it as relative to project root
+        if file_path.startswith('/'):
+            # Get project root (parent of app directory)
+            project_root = Path(__file__).parent.parent.parent
+            path = project_root / file_path.lstrip('/')
+        
+        # Resolve to absolute path
+        path = path.resolve()
+        
+        logger.info(f"Resolved file path: {path}")
+        
         if not path.exists():
-            raise DataFetchError(f"File not found: {file_path}")
+            raise DataFetchError(f"File not found: {path}")
         
         if not path.is_file():
-            raise DataFetchError(f"Path is not a file: {file_path}")
+            raise DataFetchError(f"Path is not a file: {path}")
         
         if file_type == "csv":
-            df = pd.read_csv(file_path)
+            df = pd.read_csv(path)
         elif file_type == "json":
-            df = pd.read_json(file_path)
+            df = pd.read_json(path)
         else:
             raise DataFetchError(f"Unsupported file type: {file_type}")
         

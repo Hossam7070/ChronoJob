@@ -1,4 +1,4 @@
-import { Clock, Database, Mail, Trash2 } from 'lucide-react'
+import { Clock, Database, Mail, Trash2, Play, Edit } from 'lucide-react'
 import { Job } from '../types/job'
 import cronstrue from 'cronstrue'
 
@@ -7,9 +7,11 @@ interface JobCardProps {
   isSelected: boolean
   onClick: () => void
   onDelete: () => void
+  onTest: () => void
+  onEdit: () => void
 }
 
-const JobCard = ({ job, isSelected, onClick, onDelete }: JobCardProps) => {
+const JobCard = ({ job, isSelected, onClick, onDelete, onTest, onEdit }: JobCardProps) => {
   const getCronDescription = (cronExpression: string) => {
     try {
       return cronstrue.toString(cronExpression)
@@ -51,16 +53,40 @@ const JobCard = ({ job, isSelected, onClick, onDelete }: JobCardProps) => {
             </div>
           </div>
         </div>
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onDelete()
-          }}
-          className="ml-4 p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-          aria-label="Delete job"
-        >
-          <Trash2 className="h-5 w-5" />
-        </button>
+        <div className="ml-4 flex space-x-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onTest()
+            }}
+            className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
+            aria-label="Test job"
+            title="Test and download result"
+          >
+            <Play className="h-5 w-5" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onEdit()
+            }}
+            className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+            aria-label="Edit job"
+            title="Edit job"
+          >
+            <Edit className="h-5 w-5" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onDelete()
+            }}
+            className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+            aria-label="Delete job"
+          >
+            <Trash2 className="h-5 w-5" />
+          </button>
+        </div>
       </div>
       <div className="mt-4 pt-4 border-t border-gray-200">
         <p className="text-xs text-gray-500">Last run: {formatDate(job.last_run)}</p>

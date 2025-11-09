@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+
+# Kiro IDE
+.kiro/
+
+# Data files
+data/uploads/*
+!data/uploads/.gitkeep
+!data/uploads/README.md
+data/jobs.json
+
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Frontend build
+frontend/dist/
+frontend/build/

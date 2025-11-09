@@ -5,6 +5,7 @@ This module manages the lifecycle of the APScheduler BackgroundScheduler,
 including initialization, job registration, job removal, and graceful shutdown.
 """
 import logging
+from datetime import datetime, timezone
 from typing import Optional, Callable
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -105,7 +106,8 @@ def add_job(job_config: JobConfig, executor_func: Callable) -> None:
         trigger = CronTrigger.from_crontab(job_config.schedule_time, timezone='UTC')
         
         # Log next run time
-        next_run = trigger.get_next_fire_time(None, None)
+        now = datetime.now(timezone.utc)
+        next_run = trigger.get_next_fire_time(None, now)
         if next_run:
             logger.info(f"Scheduler: Job '{job_name}' next scheduled run: {next_run}")
         
