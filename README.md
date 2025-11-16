@@ -7,9 +7,11 @@ A FastAPI-based service for creating and managing recurring data processing jobs
 - Create recurring jobs with cron-based scheduling
 - Fetch data from external APIs or internal files
 - Execute custom Python scripts for data processing
+- **Script Debugger**: Jupyter-like environment for writing and testing scripts
 - Automatic email delivery of results as CSV attachments
 - Persistent job storage with automatic recovery on restart
 - RESTful API for job management
+- Interactive web UI for job and script management
 
 ## Requirements
 
@@ -61,8 +63,12 @@ Edit the `.env` file with your settings:
 
 ## Running the Service
 
+### Backend (FastAPI)
+
 Start the FastAPI application:
 ```bash
+./start_backend.sh
+# Or manually:
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
@@ -71,6 +77,23 @@ The service will be available at `http://localhost:8000`
 API documentation is available at:
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
+
+### Frontend (React)
+
+Start the React development server:
+```bash
+cd frontend
+npm install  # First time only
+npm run dev
+```
+
+The web UI will be available at `http://localhost:5173`
+
+Features:
+- **Dashboard**: View and manage all jobs
+- **Create Job**: Create new scheduled jobs
+- **Edit Job**: Modify existing jobs
+- **Script Debugger**: Write and test scripts interactively
 
 ## Usage
 
@@ -157,6 +180,30 @@ result = filtered.groupby('category').agg({
 }).reset_index()
 ```
 
+### Script Debugger (NEW!)
+
+The Script Debugger provides a Jupyter-like environment for developing and testing your data processing scripts before using them in jobs.
+
+**Quick Start:**
+1. Navigate to the Script Debugger page in the web UI
+2. Upload a test data file (CSV or JSON)
+3. Write your Python script in the editor
+4. Click "Run Test" to execute and see results
+5. View detailed output including data preview and error logs
+6. Save working scripts for reuse in jobs
+
+**Features:**
+- Live script testing with sample data
+- Detailed error messages and tracebacks
+- Output preview (first 10 rows)
+- Save and load scripts
+- One-click script loading in job creation
+
+**Documentation:**
+- [Script Debugger Guide](SCRIPT_DEBUGGER.md) - Complete documentation
+- [Quick Start Guide](SCRIPT_DEBUGGER_QUICKSTART.md) - Get started in 5 minutes
+- [Architecture](SCRIPT_DEBUGGER_ARCHITECTURE.md) - Technical details
+
 ### Listing All Jobs
 
 ```bash
@@ -182,11 +229,14 @@ scheduled-jobs-service/
 ├── app/
 │   ├── main.py                 # FastAPI application entry point
 │   ├── models/                 # Pydantic models
-│   │   └── job.py
+│   │   ├── job.py
+│   │   └── script.py           # NEW: Script models
 │   ├── api/                    # API endpoints
-│   │   └── jobs.py
-│   ├── storage/                # Job persistence
-│   │   └── job_storage.py
+│   │   ├── jobs.py
+│   │   └── scripts.py          # NEW: Script management API
+│   ├── storage/                # Data persistence
+│   │   ├── job_storage.py
+│   │   └── script_storage.py   # NEW: Script storage
 │   ├── scheduler/              # APScheduler integration
 │   │   └── scheduler_manager.py
 │   ├── executor/               # Job execution logic
@@ -195,13 +245,30 @@ scheduled-jobs-service/
 │   │   └── script_executor.py
 │   └── delivery/               # Email delivery
 │       └── email_service.py
+├── frontend/                   # NEW: React web UI
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── Dashboard.tsx
+│   │   │   ├── CreateJob.tsx
+│   │   │   ├── EditJob.tsx
+│   │   │   └── ScriptDebugger.tsx  # NEW: Script debugger
+│   │   ├── components/
+│   │   ├── services/
+│   │   └── types/
+│   └── package.json
 ├── data/                       # Job storage and data files
-│   └── jobs.json
+│   ├── jobs.json
+│   ├── scripts.json            # NEW: Saved scripts
+│   └── uploads/
+│       └── test/               # NEW: Test data files
 ├── tests/                      # Test suite
 ├── .env                        # Environment configuration (not in git)
 ├── .env.example                # Example environment configuration
 ├── requirements.txt            # Python dependencies
-└── README.md                   # This file
+├── README.md                   # This file
+├── SCRIPT_DEBUGGER.md          # NEW: Script debugger docs
+├── SCRIPT_DEBUGGER_QUICKSTART.md  # NEW: Quick start guide
+└── SCRIPT_DEBUGGER_ARCHITECTURE.md # NEW: Architecture docs
 ```
 
 ## Email Notifications

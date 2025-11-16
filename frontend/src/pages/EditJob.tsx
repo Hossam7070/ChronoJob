@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Plus, X, Upload } from 'lucide-react'
-import { jobsApi } from '../services/api'
+import { Plus, X, Upload, FileText } from 'lucide-react'
+import { jobsApi, scriptsApi } from '../services/api'
 import { JobCreate, SourceType, FileType } from '../types/job'
+import { Script } from '../types/script'
 import Alert from '../components/Alert'
 
 const EditJob = () => {
@@ -13,6 +14,8 @@ const EditJob = () => {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [savedScripts, setSavedScripts] = useState<Script[]>([])
+  const [showScriptSelector, setShowScriptSelector] = useState(false)
 
   const [formData, setFormData] = useState<JobCreate>({
     job_name: '',
@@ -49,7 +52,17 @@ const EditJob = () => {
       }
     }
 
+    const loadSavedScripts = async () => {
+      try {
+        const scripts = await scriptsApi.getAllScripts()
+        setSavedScripts(scripts)
+      } catch (err) {
+        console.error('Failed to load scripts:', err)
+      }
+    }
+
     loadJob()
+    loadSavedScripts()
   }, [jobName, navigate])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -378,7 +391,41 @@ result = filtered.groupby('category').agg({
         </div>
 
         <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Processing Script</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Processing Script</h2>
+            <button
+              type="button"
+              onClick={() => setShowScriptSelector(!showScriptSelector)}
+              className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
+            >
+              <FileText className="h-3 w-3 mr-1.5" />
+              Load Saved Script
+            </button>
+          </div>
+          
+          {showScriptSelector && savedScripts.length > 0 && (
+            <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-xs font-medium text-gray-700 mb-2">Select a saved script:</p>
+              <div className="space-y-1 max-h-40 overflow-y-auto">
+                {savedScripts.map((script) => (
+                  <button
+                    key={script.script_name}
+                    type="button"
+                    onClick={() => {
+                      setFormData({ ...formData, processing_script: script.script_content })
+                      setShowScriptSelector(false)
+                    }}
+                    className="w-full text-left px-3 py-2 text-xs bg-white border border-gray-200 rounded hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                  >
+                    <div className="font-medium text-gray-900">{script.script_name}</div>
+                    {script.description && (
+                      <div className="text-gray-500 mt-0.5">{script.description}</div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div>
             <label htmlFor="processing_script" className="block text-sm font-medium text-gray-700">

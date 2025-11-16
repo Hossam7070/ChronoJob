@@ -160,5 +160,6 @@ async def health_check():
 
 
 # Import and include API routers
-from app.api import jobs
+from app.api import jobs, scripts
 app.include_router(jobs.router)
+app.include_router(scripts.router)

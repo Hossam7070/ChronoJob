@@ -19,7 +19,12 @@ build/
 data/uploads/*
 !data/uploads/.gitkeep
 !data/uploads/README.md
+!data/uploads/test/
+data/uploads/test/*
+!data/uploads/test/.gitkeep
+!data/uploads/test/sample_sales.csv
 data/jobs.json
+data/scripts.json
 
 # Node modules
 node_modules/

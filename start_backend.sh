@@ -1,5 +1,5 @@
 #!/bin/bash
-export ENVIRONMENT=test
+export ENVIRONMENT=live
 export SMTP_HOST=smtp.example.com
 export SMTP_PORT=587
 export SMTP_USER=test@example.com
